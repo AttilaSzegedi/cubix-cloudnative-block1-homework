@@ -6,15 +6,14 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI with Maven and Docker jobs
+ name: Java CI with Maven and Docker jobs
 
-on:
+ on:
   push:
     branches: 
     - main
-  workflow_dispatch:
 
-jobs:
+ jobs:
   javabuild:
 
     runs-on: ubuntu-latest
@@ -42,16 +41,16 @@ jobs:
         name: java-app
         path: '${{ github.workspace }}/target/*.jar'
  
-  dockerimage:
+  docker:
 
     runs-on: ubuntu-latest
     needs: javabuild
     permissions:
       contents: read
       packages: write
+      
     steps:
     - uses: actions/checkout@v3
-    - name: Set up JDK 17
     - name: Download artifact from maven job
       uses: actions/download-artifact@v3
       with:
@@ -65,6 +64,39 @@ jobs:
 
     - name: Publish docker
       run: docker push ghcr.io/attilaszegedi/cubix/1/homework/app:springboot
+  dockerverify:
+
+    runs-on: ubuntu-latest
+    needs: docker
+    permissions:
+      contents: read
+      packages: write
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Download artifact from maven job
+      uses: actions/download-artifact@v3
+      with:
+        name: java-app
+        
+    - name: Logging into docker
+      run: docker login ghcr.io -u attilaszegedi -p ${{ github.token }}
+
+    - name: Build docker
+      run: docker build . -t ghcr.io/attilaszegedi/cubix/1/homework/app:springboot
+
+    - name: verify docker
+      run: docker run -d --name test -p 8080:8080 ghcr.io/attilaszegedi/cubix/1/homework/app:springboot > /dev/null
+           sleep 10
+           curl --fail http://localhost:8080/application/test
+           RESULT=$?
+           if [ $RESULT -ne 0 ]; then
+           echo "Verification failed, here are the logs"
+           docker logs test
+           fi
+           docker stop test > /dev/null
+           docker rm test > /dev/null
+           exit $RESULT
       
 
 
