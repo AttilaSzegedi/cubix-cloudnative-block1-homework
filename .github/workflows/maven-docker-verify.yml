@@ -64,6 +64,7 @@
 
     - name: Publish docker
       run: docker push ghcr.io/attilaszegedi/cubix/1/homework/app:springboot
+      
   dockerverify:
 
     runs-on: ubuntu-latest
