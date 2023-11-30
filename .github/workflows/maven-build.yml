@@ -26,10 +26,11 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
     - name : Check Java version
       run: java -version
     - name: MAven version check
       run: mvn -version
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+    
 
