@@ -60,10 +60,10 @@
       run: docker login ghcr.io -u attilaszegedi -p ${{ github.token }}
 
     - name: Build docker
-      run: docker build . -t ghcr.io/attilaszegedi/cubix/1/homeworkfx/app:springboot
+      run: docker build . -t ghcr.io/attilaszegedi/cubix/1/homework/app:springboot
 
     - name: Publish docker
-      run: docker push ghcr.io/attilaszegedi/cubix/1/homeworkfx/app:springboot
+      run: docker push ghcr.io/attilaszegedi/cubix/1/homework/app:springboot
       
   dockerverify:
 
